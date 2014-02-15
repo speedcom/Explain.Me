@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Welcome to ExplainMe";
+}
+<style>
+    body {
+        background-image: url('../../Content/images/wrapper.png');
+        background-repeat: repeat-x;
+    }
+</style>
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    <div id="form-container">
+        <h1>Explain.Me</h1>
+
+        <label for="username">Type a random user name and room name to start</label>
+        <input type="text" id="username" class="input-medium search-query" placeholder="Username" name="username" maxlength="15" autofocus="autofocus" required="required" /> <br/>
+        <input type="text" id="roomname" class="input-medium search-query" placeholder="Roomname" name="roomname" maxlength="15" required="required" /> <br/>
+        <button type="submit" class="btn btn-large btn-primary">Start!</button>
+        
+    </div>
+}
