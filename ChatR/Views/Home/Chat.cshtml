@@ -22,9 +22,10 @@
     <h2 style="color: whitesmoke">Explain.Me</h2>
 </div>
 
-<div id="myContainer" class="container-fluid">
+
+    <div id="myContainer" class="container-fluid">
     <div id="user-room-info" class="alert alert-info">
-        <h3>Hello "<strong><p style="display: inherit" data-bind="text: username"></p></strong>" you are in "<strong><p style="display: inherit" data-bind="text: roomname"></p></strong>" room</h3>
+        <h3>Hello "<strong><p style="display: inherit" data-bind="text: username"></p></strong>!" You are in "<strong><p style="display: inherit" data-bind="text: roomname"></p></strong>" room.</h3>
     </div>
    
     <div class="row-fluid">
@@ -46,8 +47,9 @@
             </ul>
         </div>
         <!-- This is the board box -->
-        <canvas id="board-canvas"></canvas>
+        <canvas id="board-canvas2"></canvas>
     </div>
+    <!-- This is the message box -->
     <div id="compose" class="row-fluid">
         <div class="span2"></div>
         <div class="span4">
@@ -58,6 +60,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!--
 This script reference is important because navigating to /signalr/hubs will automatically generate the script.
@@ -186,65 +190,71 @@ on the server. Each hub on the server will become a property on the client side 
         
 
         // BOARD
-        var canvas = $("#board-canvas");
-        var buttonPressed = false;
+        var canvas = $("#board-canvas2");
+        var ctx = canvas[0].getContext("2d");
+        document.getElementById('board-canvas2').setAttribute('width', 600);
+        document.getElementById('board-canvas2').setAttribute('height', 600);
 
-        console.log("canvas = " + canvas);
 
-        var x;
-        var y;
+
         var color = "black";
+        var pressed = false;
+        var position;
+
+        function positionWithE(e) {
+            var o = $(canvas).offset();
+            return { x: e.clientX - o.left, y: e.clientY - o.top };
+        }
 
         canvas
             .mousedown(function (e) {
-                var posX = $(this).position().left, posY = $(this).position().top;
-                x = e.pageX - posX;
-                y = e.pageY - posY;
-                buttonPressed = true;
+                var p = positionWithE(e);
+                pressed = true;
+                position = p;
 
-                console.log("pos2: " + x + ", " + y);
+                console.log("mine-down: " + p.x + ", " + p.y);
 
-                chatHub.server.broadcastPoint(x, y);
+                chatHub.server.broadcastPoint(p.x, p.y);
             })
             .mouseup(function () {
-                buttonPressed = false;
+                pressed = false;
             })
             .mouseout(function () {
-                buttonPressed = false;
+                pressed = false;
             })
             .mousemove(function (e) {
-                if (buttonPressed) {
+                var p = positionWithE(e);
+                if (pressed) {
+                    ctx.moveTo(position.x, position.y);
+                    ctx.lineTo(p.x, p.y);
+                    ctx.stroke();
+                    console.log("mine-move: " + p.x + ", " + p.y);
+                    chatHub.server.broadcastLine(position.x, position.y, p.x, p.y);
 
-                    var oldX = x;
-                    var oldY = y;
-
-                    var posX = $(this).position().left;
-                    var posY = $(this).position().top;
-
-                    x = e.pageX - posX;
-                    y = e.pageY - posY;
-
-                    chatHub.server.broadcastLine(oldX, oldY, x, y);
+                    position = p;
                 }
             });
 
-        var ctx = canvas[0].getContext("2d");
-        console.log("context = " + ctx);
-
         function setPoint(x, y, color) {
+            console.log("theirs-down: " + x + ", " + y);
             ctx.fillStyle = color;
             ctx.beginPath();
-            ctx.arc(x, y, 2, 0, Math.PI * 2);
+            ctx.arc(x, y, 1, 0, Math.PI * 2);
             ctx.fill();
         }
         function drawLine(x0, y0, x1, y1, color) {
-            ctx.beginPath();
+            /*ctx.beginPath();
             ctx.moveTo(x0, y0);
             ctx.lineTo(x1, y1);
             ctx.strokeStyle = color;
             ctx.lineWidth = 1;
             ctx.stroke();
-            ctx.closePath();
+            ctx.closePath();*/
+            console.log("theirs-move: " + x1 + ", " + y1);
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.stroke();
+
         }
         function clearPoints() {
             ctx.clearRect(0, 0, canvas.width(), canvas.height());

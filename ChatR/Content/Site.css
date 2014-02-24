@@ -104,11 +104,9 @@ input, button
 }
 
 /* Board specific style */
-#board-canvas 
+#board-canvas2
 {
-     position:relative;
-     width: 900px;
-     height: 600px;
+     position: relative;
      border:1px solid #000000;
      margin-left: 10px;
      background-color: white;
@@ -117,9 +115,9 @@ input, button
 /* Chat specific style */
 #chat-list 
 {    
-    position:relative;
+    position: relative;
     height: 600px;
-    overflow-y:auto;
+    overflow-y: auto;
     background-color: White;	    
     -moz-border-radius: 2px;
     border:1px solid #000000;
