@@ -109,9 +109,9 @@ namespace ChatR.Hubs
         {
             Clients.Group(getRoomname()).drawPoint(x, y);
         }
-        public void BroadcastClear()
+        public void ClearBoard()
         {
-            Clients.Group(getRoomname()).clear();
+            Clients.Group(getRoomname()).clearBoard();
         }
 
         #endregion
